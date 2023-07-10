@@ -1,2 +1,2 @@
 # demo-redistimeseries
-A demo exploring mocked stock market data using Redis Timeseries
+A guideline to design OCLH charts using Redis Timeseries module
