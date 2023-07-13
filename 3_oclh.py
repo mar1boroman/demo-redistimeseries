@@ -1,11 +1,23 @@
 import redis
-import json
 from time import sleep
 
 STOCK_NAME = 'MyStock'
 r = redis.Redis(host='redis-14916.okon.demo.redislabs.com', port=14916, decode_responses=True)
 
 def view_oclh(tskey):
+    '''
+    TS.MGET
+    =======
+    This function queries all the 4 O,C,L,H compacted keys which have the label 'ts:<stock_name>',
+    combines their respones,
+    and loads the response into a redis stream data structure
+    which can be used in the ui.
+    
+    Notice the use of 'maxlen' and 'approximate' parameters
+    These help the ui stream evict the old entries automatically,
+    thus making sure your memory consumption does not explode
+    '''
+    prev_bucket = None
     while True:
         resp = r.ts().mget([f'parent={tskey}'],)
         payload = {}
@@ -25,8 +37,12 @@ def view_oclh(tskey):
                     payload['ts'] = v[1]
                     payload['high'] = v[2]
 
-        print(payload)
-        r.xadd(f'ui:{tskey}', payload, id=payload['ts'],)
+        if payload['ts'] == prev_bucket:
+            continue
+        else:
+            print(payload)
+            r.xadd(f'ui:{tskey}', payload, id=payload['ts'],maxlen=10000,approximate=True)
+            prev_bucket = payload['ts']
         sleep(1.01)
     
 
