@@ -4,6 +4,10 @@ A simple way to design OCLH charts using Redis Timeseries module
 Note that this is not a production ready code, this is just a demo
 of how Redis Streams work with Redis Timeseries to enable OCLH charts
 
+
+![](./candlestick.gif)
+
+
 # How to run this demo
 
 ## Clone the repository and install the required libraries
