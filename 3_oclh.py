@@ -1,8 +1,20 @@
 import redis
 from time import sleep
+import configparser
 
-STOCK_NAME = 'MyStock'
-r = redis.Redis(host='redis-14916.okon.demo.redislabs.com', port=14916, decode_responses=True)
+parser = configparser.ConfigParser()
+parser.read_file(open("config.ini"))
+
+for x, y in parser.items("GENERAL"):
+    if x == 'stock_name':
+        STOCK_NAME = y
+    if x == 'redis_host':
+        redis_host = y
+    if x == 'redis_port':
+        redis_port = y
+        
+# Connecting to redis       
+r = redis.Redis(host=redis_host, port=redis_port, decode_responses=True)
 
 def view_oclh(tskey):
     '''
